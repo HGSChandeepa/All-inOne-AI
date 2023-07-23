@@ -8,10 +8,10 @@ export default function LandingPage() {
       LandingPage(not protected)
       <div>
         <Link href={"/sign-in"}>
-          <Button>Sign In</Button>
+          <Button>Login</Button>
         </Link>
         <Link href={"/sign-up"}>
-          <Button>Sign Up</Button>
+          <Button>Register</Button>
         </Link>
       </div>
     </div>
