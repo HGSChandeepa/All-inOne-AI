@@ -4,6 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import React from "react";
 import { Poppins } from "next/font/google";
+import { usePathname } from "next/navigation";
 
 import { cn } from "@/lib/utils";
 import {
@@ -67,6 +68,8 @@ const routes = [
 ];
 
 export default function SideBar() {
+  const pathname = usePathname();
+
   return (
     <div className="space-y-4 py-4 flex flex-col h-full bg-[#111827] text-white">
       <div className=" px-3 py-2 flex-1">
@@ -86,7 +89,10 @@ export default function SideBar() {
             <Link
               key={route.href}
               href={route.href}
-              className=" text-sm group flex p-3 w-full justify-start font-medium rounded-md hover:bg-gray-700 hover:text-white"
+              className={cn(
+                " text-sm group flex p-3 w-full justify-start font-medium rounded-md hover:bg-gray-700 hover:text-white",
+                pathname === route.href ? "bg-gray-700 text-white" : ""
+              )}
             >
               <div className=" flex items-center flex-1">
                 <route.icon className={cn("h-5 w-5 mr-3", route.color)} />
