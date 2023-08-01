@@ -2,7 +2,7 @@
 import axios from "axios";
 import * as z from "zod";
 import Heading from "@/components/Heading";
-import { Divide, MessageSquare } from "lucide-react";
+import { Video } from "lucide-react";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -12,16 +12,12 @@ import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
-import { ChatCompletionRequestMessage } from "openai";
 import Empty from "@/components/Empty";
 import Loader from "@/components/Loader";
-import { cn } from "@/lib/utils";
-import UserAvatar from "@/components/UserAvatar";
-import BotAvatar from "@/components/BotAvatar";
 
 export default function page() {
   const router = useRouter();
-  const [messages, setMessages] = useState<ChatCompletionRequestMessage[]>([]);
+  const [video, setVideo] = useState<string>();
   //defingin the form default values
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -35,21 +31,13 @@ export default function page() {
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      const userMessage: ChatCompletionRequestMessage = {
-        role: "user",
-        content: values.prompt,
-      };
-      //create the new messages
-      const newMessages = [...messages, userMessage];
-      const response = await axios.post("/api/conversation", {
-        messages: newMessages,
-      });
-
-      setMessages((current) => [...current, response.data, userMessage]);
-
+      setVideo(undefined);
+      const response = await axios.post("/api/video", values);
+      console.log(response);
+      setVideo(response.data[0]); // Assuming the response.data[0] is the video URL
       form.reset();
     } catch (error: any) {
-      //TODO:open pro Model
+      // TODO: Handle error
       console.log(error);
     } finally {
       router.refresh();
@@ -59,11 +47,11 @@ export default function page() {
   return (
     <div>
       <Heading
-        title={"Coversation"}
-        description={"Most advanced convverdation modal"}
-        icon={MessageSquare}
-        bgColor="text-violet-500"
-        iconColor="bg-violet-500/10"
+        title={"Video Genaration"}
+        description={"Turn your ideas into video"}
+        icon={Video}
+        bgColor="text-orange-700"
+        iconColor="bg-orange-700/10"
       />
 
       <div className=" px-4 lg:px-8">
@@ -81,7 +69,7 @@ export default function page() {
                       <Input
                         className="border-0 outline-none focus-visible:ring-0 focus-visible:ring-transparent"
                         disabled={isLoading}
-                        placeholder="Begin typing your conversation prompt here..."
+                        placeholder="Type your message here togenarate the videos"
                         {...field}
                       />
                     </FormControl>
@@ -105,25 +93,17 @@ export default function page() {
               <Loader />
             </div>
           )}
-          {messages.length === 0 && !isLoading && (
-            <Empty lable="No conversations started!" />
+          {!video && !isLoading && (
+            <Empty lable="No Videos are Genarated yet!" />
           )}
-          <div className=" flex flex-col-reverse gap-y-4">
-            {messages.map((message) => (
-              <div
-                key={message.content}
-                className={cn(
-                  "p-8 w-full flex items-start gap-x-8 rounded-lg",
-                  message.role === "user"
-                    ? "bg-white border border-black/10"
-                    : "bg-muted"
-                )}
-              >
-                {message.role === "user" ? <UserAvatar /> : <BotAvatar />}
-                <p className=" text-sm">{message.content}</p>
-              </div>
-            ))}
-          </div>
+          {video && (
+            <video
+              controls
+              className=" w-full mt-8 aspect-video rounded-lg border bg-black"
+            >
+              <source src={video} />
+            </video>
+          )}
         </div>
       </div>
     </div>

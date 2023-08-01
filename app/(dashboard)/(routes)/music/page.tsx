@@ -48,7 +48,7 @@ export default function page() {
   return (
     <div>
       <Heading
-        title={"Musi Genaration"}
+        title={"Music Genaration"}
         description={"Turn your ideas into music"}
         icon={Music}
         bgColor="text-emerald-500"
