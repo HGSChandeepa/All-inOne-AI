@@ -2,10 +2,11 @@
 import axios from "axios";
 import * as z from "zod";
 import Heading from "@/components/Heading";
-import { ImageIcon } from "lucide-react";
+import { Download, ImageIcon } from "lucide-react";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import Image from "next/image";
 
 import { amountOptions, formSchema, resolutionOptions } from "./constants";
 import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
@@ -21,10 +22,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Card,
+  CardDescription,
+  CardFooter,
+  CardTitle,
+} from "@/components/ui/card";
 
 export default function page() {
   const router = useRouter();
   const [images, setImages] = useState<string[]>([]);
+  const [propmtEntered, setPromptEntered] = useState<string>("");
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -41,6 +49,7 @@ export default function page() {
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
       setImages([]);
+      setPromptEntered(values.prompt);
       const response = await axios.post("/api/image", values);
       //this is the array of image urls as string
       //and this fn will extract the urls from the response
@@ -162,7 +171,28 @@ export default function page() {
           {images.length === 0 && !isLoading && (
             <Empty lable="No Images are Genarated!" />
           )}
-          <div>images are here</div>
+          <div className=" grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mt-8">
+            {/* <p>{propmtEntered}</p> */}
+            {images.map((image) => (
+              <Card
+                key={image}
+                className="rounded-lg overflow-hidden shadow-sm"
+              >
+                <div className="relative aspect-square bg-darkred">
+                  <Image src={image} alt="iage" fill />
+                </div>
+                <CardFooter className="p-2">
+                  <Button
+                    variant={"secondary"}
+                    className="w-full"
+                    onClick={() => window.open(image)}
+                  >
+                    <Download className="h-4 w-4 mr-2" /> Download
+                  </Button>
+                </CardFooter>
+              </Card>
+            ))}
+          </div>
         </div>
       </div>
     </div>
