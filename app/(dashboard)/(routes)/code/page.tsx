@@ -2,7 +2,7 @@
 import axios from "axios";
 import * as z from "zod";
 import Heading from "@/components/Heading";
-import { Code, Divide, MessageSquare } from "lucide-react";
+import { Code } from "lucide-react";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -47,6 +47,7 @@ export default function page() {
       });
 
       setMessages((current) => [...current, response.data, userMessage]);
+      console.log(response.data);
 
       form.reset();
     } catch (error: any) {
@@ -109,7 +110,7 @@ export default function page() {
           {messages.length === 0 && !isLoading && (
             <Empty lable="No conversations started!" />
           )}
-          <div className=" flex flex-col-reverse gap-y-4">
+          <div className=" flex flex-col-reverse ">
             {messages.map((message) => (
               <div
                 key={message.content}
