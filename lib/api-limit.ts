@@ -1,6 +1,7 @@
 import { auth } from "@clerk/nextjs";
 import prismadb from "@/lib/prismadb";
 import { MAX_FREE_COUNT } from "@/constants";
+import { Pirata_One } from "next/font/google";
 
 //this function will increase the MAX_FREE_COUNT
 
@@ -50,5 +51,28 @@ export const checkApiLimit = async () => {
     return true;
   } else {
     return false;
+  }
+};
+
+//get the api limit count
+
+export const getApiLimitCount = async () => {
+  //get the count from the database
+  //userid
+  const { userId } = auth();
+  if (!userId) {
+    return 0;
+  }
+
+  const userApiLimit = await prismadb.userApiLimit.findUnique({
+    where: { userId: userId },
+  });
+
+  if (!userApiLimit) {
+    return 0;
+  }
+  //return the count
+  else {
+    return userApiLimit.count;
   }
 };
