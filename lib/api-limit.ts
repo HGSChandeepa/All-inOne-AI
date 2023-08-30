@@ -34,7 +34,7 @@ export const increaseApiLimit = async () => {
 
 // this function will check weather the user has incresed the free tear
 
-export const checkApiLimi = async () => {
+export const checkApiLimit = async () => {
   //check there is a userid
   const { userId } = auth();
 

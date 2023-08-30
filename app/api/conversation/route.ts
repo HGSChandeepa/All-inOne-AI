@@ -1,7 +1,7 @@
 import { auth } from "@clerk/nextjs";
 import { NextResponse } from "next/server";
 import { Configuration, OpenAIApi } from "openai";
-import { checkApiLimi, increaseApiLimit } from "@/lib/api-limit";
+import { checkApiLimit, increaseApiLimit } from "@/lib/api-limit";
 
 const configuration = new Configuration({
   apiKey: process.env.OPENAI_API_KEY,
@@ -33,7 +33,7 @@ export async function POST(req: Request) {
     }
 
     //?check the API limit exceeded or not
-    const freeTrail = await checkApiLimi();
+    const freeTrail = await checkApiLimit();
 
     if (!freeTrail) {
       return new NextResponse("Free trail has expaired", {
