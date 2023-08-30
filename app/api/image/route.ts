@@ -1,6 +1,7 @@
 import { auth } from "@clerk/nextjs";
 import { NextResponse } from "next/server";
 import { Configuration, OpenAIApi } from "openai";
+import { checkApiLimit, increaseApiLimit } from "@/lib/api-limit";
 
 const configuration = new Configuration({
   apiKey: process.env.OPENAI_API_KEY,
@@ -37,12 +38,21 @@ export async function POST(req: Request) {
       return new NextResponse("resolution is required", { status: 400 });
     }
 
+    //check for the free trail
+
+    const freeTrail = await checkApiLimit();
+    if (!freeTrail) {
+      return new NextResponse("Free trail has expaired", { status: 403 });
+    }
+
     //create the images
     const response = await openai.createImage({
       prompt: prompt,
       n: parseInt(amount, 10),
       size: resolution,
     });
+
+    await increaseApiLimit();
 
     //return
     return NextResponse.json(response.data.data);
